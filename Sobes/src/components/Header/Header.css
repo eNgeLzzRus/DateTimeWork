@@ -1,0 +1,21 @@
+.header-main-div {
+    height: 100px;
+    width: 1500px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    margin: 30px 0px;
+    padding: 0;
+    background-color: #1F2436;
+    border-radius: 20px;
+    border: black 2px solid;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.header-main-div h2 {
+    font-family: 'Roboto';
+    font-size: 28px;
+    background: none;
+    color: rgb(207, 215, 221);
+}

@@ -1,0 +1,168 @@
+.workspace-main-div {
+    height: 700px;
+    width: 1500px;
+    display: flex;
+    margin: 50px 0px;
+    background-color: #1F2436;
+    border-radius: 20px;
+    border: black 2px solid;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.workspace {
+    margin-top: 50px;
+    height: 200px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+    gap: 50px;
+}
+
+/* Общие стили для обоих типов инпутов */
+.date-zone {
+    position: relative;
+}
+
+.date-zone input[type="date"],
+.date-zone input[type="datetime-local"] {
+    width: 160px;
+    height: 34px;
+    padding: 0 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #2A344E;
+    color: #C1C8D4;
+    font-family: 'Roboto';
+    transition: background-color 0.2s ease; /* Добавляем плавный переход */
+}
+
+.input-zone:hover input[type="date"],
+.input-zone:hover input[type="datetime-local"],
+.input-zone:hover input.has-placeholder {
+    background-color: #3D4C77;
+}
+
+
+
+/* Специфичная ширина для datetime-local */
+.date-zone input[type="datetime-local"] {
+    width: 197px;
+}
+
+/* Общие стили для плейсхолдеров */
+.date-zone input.has-placeholder {
+    color: transparent;
+    background-color: #2F3A5A;
+    border: none;
+}
+
+.date-zone input.error {
+    color: transparent;
+    background-color: #4A2D27;
+    border: 1px solid #D7A3A3;
+}
+
+.date-zone input.has-placeholder:hover {
+    background-color: #3D4C77;
+}
+
+ 
+.date-placeholder {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #C1C8D4;
+    pointer-events: none;
+    font-family: 'Roboto';
+    font-size: 12px;
+}
+
+
+.checkboxes {
+    display: flex;
+    gap: 20px
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox input[type="checkbox"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    background-color: #2F3A5A;
+    border: 1px solid #9FAABE;
+    cursor: pointer;
+    position: relative;
+}
+
+.checkbox input[type="checkbox"]:checked {
+    background-color: #131825;
+    border-color: #2d3035;
+}
+
+.errorbox input[type="checkbox"]:checked {
+    background-color: #251313;
+    border-color: #2d3035;
+}
+
+.checkbox input[type="checkbox"]:checked::after {
+    content: "✓";
+    position: absolute;
+    color: white;
+    font-size: 14px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.checkbox p {
+    padding-left: 10px;
+    font-family: 'Roboto';
+    color: #9FAABE;
+    margin: 0;
+}
+
+/* Стили для иконок календаря */
+.date-zone input[type="date"]::-webkit-calendar-picker-indicator,
+.date-zone input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.8);
+    cursor: pointer;
+}
+
+.input-zone {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    height: 34px;
+}
+
+.clear-button {
+    position: absolute;
+    right: 30px;
+    background: none;
+    transform: translateY(1.5px);
+    border: none;
+    color: #9FAABE;
+    font-size: 18px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.input-zone:hover .clear-button {
+    opacity: 1;
+}
+
+.input-zone .clear-button.always-visible {
+    opacity: 1;
+}
