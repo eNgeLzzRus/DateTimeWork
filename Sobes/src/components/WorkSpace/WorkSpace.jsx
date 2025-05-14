@@ -1,165 +1,277 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './WorkSpace.css';
-import { FiX } from 'react-icons/fi';
-import "react-datepicker/dist/react-datepicker.css";
-import DatePicker from 'react-datepicker';
+import { FiX, FiCalendar } from 'react-icons/fi';
+import CustomCalendar from '../CustomCalendar/CustomCalendar';
+import { format, parse, isValid } from 'date-fns';
 
 const WorkSpace = () => {
-    const [date, setDate] = useState('');
-    const [datetime, setDatetime] = useState('');
-    const [showPlaceholder, setShowPlaceholder] = useState(true);
-    const [goTime, setGoTime] = useState(false);
-    const [error, setError] = useState(false);
-    const [showError, setShowError] = useState(false);
-    const [inactive, setInactive] = useState(false);
-    const [showCalendar, setShowCalendar] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [goTime, setGoTime] = useState(false);
+  const [error, setError] = useState(false);
+  const [inactive, setInactive] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+  const [calendarViewMode, setCalendarViewMode] = useState('month');
+  const inputRef = useRef(null);
+  const calendarRef = useRef(null);
 
-    const selectedDate = goTime ? datetime : date;
+  useEffect(() => {
+    if (selectedDate) {
+      const formatString = goTime ? 'dd.MM.yyyy HH:mm' : 'dd.MM.yyyy';
+      setInputValue(format(selectedDate, formatString));
+    } else {
+      setInputValue('');
+    }
+  }, [selectedDate, goTime]);
 
-    useEffect(() => {
-        if (error) {
-            const value = goTime ? datetime : date;
-            setShowError(!value);
-        } else {
-            setShowError(false);
+  const parseInput = (value) => {
+    if (!value.trim()) return null;
+
+    const cleanValue = value.replace(/\D/g, '');
+
+    if (!goTime) {
+      if (cleanValue.length <= 8) {
+        const day = parseInt(cleanValue.slice(0, 2)) || 1;
+        const month = (parseInt(cleanValue.slice(2, 4)) || 1) - 1;
+        let year = parseInt(cleanValue.slice(4)) || new Date().getFullYear();
+
+        if (cleanValue.slice(4).length <= 2) {
+          year = year > 80 ? 1900 + year : 2000 + year;
         }
-    }, [error, date, datetime, goTime]);
 
-    const checkError = (value) => {
-        setShowError(error && !value);
-    };
+        const tempDate = new Date(year, month, Math.min(day, 31));
 
-    const handleDateChange = (newDate) => {
-        if (goTime) {
-            setDatetime(newDate);
-        } else {
-            setDate(newDate);
+        if (
+          tempDate.getFullYear() === year &&
+          tempDate.getMonth() === month &&
+          tempDate.getDate() === day
+        ) {
+          return tempDate;
         }
-        if (newDate) {
-            setShowPlaceholder(false);
-            setShowError(false);
-        }
-    };
-    
-    const toggleDateTime = () => {
-        setGoTime(!goTime);
-        setShowPlaceholder(true);
-    };
-
-    const toggleError = (e) => {
-        const isChecked = e.target.checked;
-        setError(isChecked);
-    };
-
-    const toggleInactive = (e) => {
-        const isActive = e.target.checked;
-        setInactive(isActive);
-    };
-
-    const getInputClassName = () => {
-        let className = inactive ? 'inactive ' : '';
-        if (showError && !inactive) className += 'error ';
-        if (showPlaceholder && !(goTime ? datetime : date)) className += 'has-placeholder ';
-        return className.trim();
-    };
-
-    const openCalendar = () => {
-        if (!inactive) setShowCalendar(true);
+        return null;
+      }
     }
 
-    const clearInput = () => {
-        if (goTime) {
-            setDatetime('');
-        } else {
-            setDate('');
-        }
-        setShowPlaceholder(true);
+    try {
+      const formatString = goTime ? 'dd.MM.yyyy HH:mm' : 'dd.MM.yyyy';
+      const parsed = parse(value, formatString, new Date());
+      return isValid(parsed) ? parsed : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const formatInputValue = (value) => {
+    const digits = value.replace(/\D/g, '');
+
+    if (goTime) {
+      if (digits.length <= 2) return digits;
+      if (digits.length <= 4) return `${digits.slice(0, 2)}.${digits.slice(2)}`;
+      if (digits.length <= 8)
+        return `${digits.slice(0, 2)}.${digits.slice(2, 4)}.${digits.slice(4)}`;
+      return `${digits.slice(0, 2)}.${digits.slice(2, 4)}.${digits.slice(4, 8)} ${digits.slice(
+        8,
+        10
+      )}:${digits.slice(10, 12)}`;
+    } else {
+      if (digits.length <= 2) return digits;
+      if (digits.length <= 4) return `${digits.slice(0, 2)}.${digits.slice(2)}`;
+      return `${digits.slice(0, 2)}.${digits.slice(2, 4)}.${digits.slice(4)}`;
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    const formattedValue = formatInputValue(value);
+    setInputValue(formattedValue);
+    const cursorPosition = e.target.selectionStart;
+    setTimeout(() => {
+      const newCursorPos = cursorPosition + (formattedValue.length - value.length);
+      e.target.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+
+    if (formattedValue.length === (goTime ? 16 : 10)) {
+      const parsed = parseInput(formattedValue);
+      if (parsed) {
+        setSelectedDate(parsed);
+        setError(false);
+      } else {
+        setSelectedDate(null);
+        setError(true);
+      }
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      const parsed = parseInput(inputValue);
+      if (parsed) {
+        setSelectedDate(parsed);
+        setError(false);
+      } else {
+        setSelectedDate(null);
+        if (error) setError(true);
+      }
+      e.preventDefault();
+    }
+  };
+
+  const handleInputBlur = () => {
+    const parsed = parseInput(inputValue);
+    if (parsed) {
+      setSelectedDate(parsed);
+      setError(false);
+    } else {
+      setSelectedDate(null);
+      if (error && inputValue) setError(true);
+    }
+  };
+
+  const clearInput = () => {
+    setInputValue('');
+    setSelectedDate(null);
+    inputRef.current?.focus();
+  };
+
+  const toggleDateTime = () => {
+    setGoTime(!goTime);
+    if (selectedDate) {
+      const formatString = !goTime ? 'dd.MM.yyyy HH:mm' : 'dd.MM.yyyy';
+      setInputValue(format(selectedDate, formatString));
+    } else {
+      setInputValue('');
+    }
+  };
+
+  const toggleError = (e) => {
+    setError(e.target.checked);
+    if (!e.target.checked && selectedDate) {
+      setError(false);
+    }
+  };
+
+  const toggleInactive = (e) => {
+    setInactive(e.target.checked);
+  };
+
+  const getInputClassName = () => {
+    let className = 'custom-date-input';
+    if (inactive) className += ' inactive';
+    if (error && !selectedDate && !inactive) className += ' error';
+    return className;
+  };
+
+  const openCalendar = (e) => {
+    e.preventDefault();
+    if (!inactive) setShowCalendar(true);
+  };
+
+  // Закрытие календаря по клику вне его
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (calendarRef.current && !calendarRef.current.contains(event.target)) {
+        setShowCalendar(false);
+      }
     };
 
-    return (
-        <div className='workspace-main-div'>
-            <div className='workspace'>
-                <div className="checkboxes">
-                    <div className="checkbox">
-                        <input 
-                            type="checkbox" 
-                            checked={inactive}
-                            onChange={toggleInactive} 
-                        />
-                        <p>Выключить</p>
-                    </div>
-                    <div className="checkbox errorbox">
-                        <input 
-                            type="checkbox" 
-                            checked={error}
-                            onChange={toggleError} 
-                        />
-                        <p>Ошибка</p>
-                    </div>
-                    <div className="checkbox">
-                        <input 
-                            type="checkbox" 
-                            checked={goTime}
-                            onChange={toggleDateTime}
-                        />
-                        <p>Время</p>
-                    </div>
-                </div>
+    if (showCalendar) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
 
-                <div className="date-zone">
-                    <div className="input-zone">
-                        <input
-                            type='text'
-                            value={selectedDate ? new Date(selectedDate).toLocaleString(goTime ? 'ru' : 'ru', {
-                                year: 'numeric',
-                                month: '2-digit',
-                                day: '2-digit',
-                                ...(goTime && { hour: '2-digit', minute: '2-digit' })
-                            }) : ''}
-                            onClick={openCalendar}
-                            readOnly
-                            placeholder={goTime ? 'Выберите дату и время' : 'Выберите дату'}
-                            onFocus={() => setShowPlaceholder(false)}
-                            className={getInputClassName()}
-                        />
-                        {selectedDate && !inactive && (
-                            <button
-                                className='clear-button'
-                                onClick={clearInput}
-                                aria-label='Очистить дату'
-                            >
-                                <FiX />
-                            </button>
-                        )}
-                    </div>
-                    {showPlaceholder && !selectedDate && (
-                        <span className={`date-placeholder ${inactive ? 'inactive' : ''}`}>
-                            {goTime ? 'Выберите дату и время' : 'Выберите дату'}
-                        </span>
-                    )}
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showCalendar]);
 
-                    {showCalendar && !inactive && (
-                        <div className="calendar-overlay">
-                            <DatePicker 
-                                selected={selectedDate || null}
-                                onChange={(d) => {
-                                    handleDateChange(d)
-                                    setShowCalendar()
-                                }}
-                                showTimeSelect={goTime}
-                                timeFormat='HH:mm'
-                                timeIntervals={15}
-                                dateFormat={goTime ? 'yyyy-MM-dd HH:mm' : 'yyyy-MM-dd'}
-                                inline
-                                locale='ru'
-                                onClickOutside={() => setShowCalendar(false)}
-                            />
-                        </div>
-                    )}
-                </div>
-            </div>
+  return (
+    <div className="workspace-main-div">
+      <div className="workspace">
+        <div className="checkboxes">
+          <div className="checkbox">
+            <input
+              type="checkbox"
+              checked={inactive}
+              onChange={toggleInactive}
+              id="inactive-checkbox"
+            />
+            <label htmlFor="inactive-checkbox">Выключить</label>
+          </div>
+          <div className="checkbox errorbox">
+            <input
+              type="checkbox"
+              checked={error}
+              onChange={toggleError}
+              id="error-checkbox"
+            />
+            <label htmlFor="error-checkbox">Ошибка</label>
+          </div>
+          <div className="checkbox">
+            <input
+              type="checkbox"
+              checked={goTime}
+              onChange={toggleDateTime}
+              id="time-checkbox"
+            />
+            <label htmlFor="time-checkbox">Время</label>
+          </div>
         </div>
-    );
+
+        <div className="date-zone">
+          <div className="input-zone">
+            <input
+              ref={inputRef}
+              type="text"
+              value={inputValue}
+              onChange={handleInputChange}
+              onBlur={handleInputBlur}
+              onKeyDown={handleKeyDown}
+              className={getInputClassName()}
+              style={{ width: goTime ? '197px' : '160px' }}
+              onClick={() => !inactive && setShowCalendar(true)}
+              disabled={inactive}
+              placeholder={goTime ? 'Введите дату и время' : 'Введите дату'}
+              aria-invalid={error && !selectedDate}
+              aria-describedby={error && !selectedDate ? 'date-error' : undefined}
+            />
+            {inputValue && !inactive && (
+              <button
+                className="clear-button"
+                onClick={clearInput}
+                aria-label="Очистить дату"
+                tabIndex={-1}
+              >
+                <FiX />
+              </button>
+            )}
+            {!inactive && (
+              <button
+                className="calendar-button"
+                onClick={openCalendar}
+                aria-label="Открыть календарь"
+              >
+                <FiCalendar />
+              </button>
+            )}
+            {showCalendar && (
+                <div className="calendar-overlay" ref={calendarRef}>
+                    <CustomCalendar
+                    value={selectedDate}
+                    onChange={(date) => {
+                        setSelectedDate(date);
+                        setShowCalendar(false);
+                    }}
+                    viewMode={calendarViewMode}
+                    onViewModeChange={setCalendarViewMode}
+                    />
+                </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default WorkSpace;
