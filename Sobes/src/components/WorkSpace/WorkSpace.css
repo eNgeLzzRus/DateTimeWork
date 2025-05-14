@@ -1,168 +1,200 @@
 .workspace-main-div {
-    height: 700px;
-    width: 1500px;
-    display: flex;
-    margin: 50px 0px;
-    background-color: #1F2436;
-    border-radius: 20px;
-    border: black 2px solid;
-    margin-left: auto;
-    margin-right: auto;
+  height: 700px;
+  width: 1500px;
+  display: flex;
+  margin: 50px 0px;
+  background-color: #1F2436;
+  border-radius: 20px;
+  border: black 2px solid;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .workspace {
-    margin-top: 50px;
-    height: 200px;
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-    margin-left: auto;
-    margin-right: auto;
-    gap: 50px;
+  margin-top: 50px;
+  height: 200px;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+  gap: 50px;
 }
 
-/* Общие стили для обоих типов инпутов */
 .date-zone {
-    position: relative;
+  position: relative;
 }
 
-.date-zone input[type="date"],
+.date-zone input {
+  width: 160px;
+  height: 34px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #2F3A5A;
+  color: #C1C8D4;
+  font-family: 'Roboto';
+  transition: all 0.2s ease;
+}
+
 .date-zone input[type="datetime-local"] {
-    width: 160px;
-    height: 34px;
-    padding: 0 10px;
-    border: none;
-    border-radius: 4px;
-    background-color: #2A344E;
-    color: #C1C8D4;
-    font-family: 'Roboto';
-    transition: background-color 0.2s ease; /* Добавляем плавный переход */
+  width: 197px;
 }
 
-.input-zone:hover input[type="date"],
-.input-zone:hover input[type="datetime-local"],
-.input-zone:hover input.has-placeholder {
-    background-color: #3D4C77;
+.date-zone input:not(.inactive):hover {
+  background-color: #3D4C77;
 }
 
-
-
-/* Специфичная ширина для datetime-local */
-.date-zone input[type="datetime-local"] {
-    width: 197px;
-}
-
-/* Общие стили для плейсхолдеров */
 .date-zone input.has-placeholder {
-    color: transparent;
-    background-color: #2F3A5A;
-    border: none;
+  color: transparent;
 }
 
 .date-zone input.error {
-    color: transparent;
-    background-color: #4A2D27;
-    border: 1px solid #D7A3A3;
+  background-color: #4A2D27;
+  border: 1px solid #D7A3A3;
 }
 
-.date-zone input.has-placeholder:hover {
-    background-color: #3D4C77;
+.date-zone input.inactive {
+  background-color: #2A344E !important;
+  cursor: not-allowed;
+  pointer-events: none;
+  color: #6B7280 !important;
 }
 
- 
+.date-zone input.inactive.has-placeholder {
+  color: transparent !important;
+}
+
+.date-zone input.inactive::-webkit-datetime-edit {
+  color: #6B7280 !important;
+}
+
+.date-zone input.inactive.has-placeholder::-webkit-datetime-edit {
+  display: none;
+}
+
+.date-zone input.inactive::-webkit-calendar-picker-indicator {
+  visibility: hidden;
+}
+
+.date-zone input[type="date"]::-webkit-calendar-picker-indicator,
+.date-zone input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    filter: invert(1) brightness(2); 
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+.date-zone input[type="date"]:hover::-webkit-calendar-picker-indicator,
+.date-zone input[type="datetime-local"]:hover::-webkit-calendar-picker-indicator {
+    opacity: 1;
+}
+
+.date-zone input.inactive::-webkit-calendar-picker-indicator {
+    filter: invert(0.6) brightness(1.5); 
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .date-placeholder {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #C1C8D4;
-    pointer-events: none;
-    font-family: 'Roboto';
-    font-size: 12px;
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-family: 'Roboto';
+  font-size: 12px;
+  color: #C1C8D4;
 }
 
+.date-placeholder.inactive {
+  color: #6B7280;
+}
 
 .checkboxes {
-    display: flex;
-    gap: 20px
+  display: flex;
+  gap: 20px;
 }
 
 .checkbox {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .checkbox input[type="checkbox"] {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
-    background-color: #2F3A5A;
-    border: 1px solid #9FAABE;
-    cursor: pointer;
-    position: relative;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background-color: #2F3A5A;
+  border: 1px solid #9FAABE;
+  cursor: pointer;
+  position: relative;
 }
 
 .checkbox input[type="checkbox"]:checked {
-    background-color: #131825;
-    border-color: #2d3035;
+  background-color: #131825;
+  border-color: #2d3035;
 }
 
 .errorbox input[type="checkbox"]:checked {
-    background-color: #251313;
-    border-color: #2d3035;
+  background-color: #251313;
+  border-color: #2d3035;
 }
 
 .checkbox input[type="checkbox"]:checked::after {
-    content: "✓";
-    position: absolute;
-    color: white;
-    font-size: 14px;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+  content: "✓";
+  position: absolute;
+  color: white;
+  font-size: 14px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .checkbox p {
-    padding-left: 10px;
-    font-family: 'Roboto';
-    color: #9FAABE;
-    margin: 0;
-}
-
-/* Стили для иконок календаря */
-.date-zone input[type="date"]::-webkit-calendar-picker-indicator,
-.date-zone input[type="datetime-local"]::-webkit-calendar-picker-indicator {
-    filter: invert(0.8);
-    cursor: pointer;
+  padding-left: 10px;
+  font-family: 'Roboto';
+  color: #9FAABE;
+  margin: 0;
 }
 
 .input-zone {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    height: 34px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
 }
 
 .clear-button {
-    position: absolute;
-    right: 30px;
-    background: none;
-    transform: translateY(1.5px);
-    border: none;
-    color: #9FAABE;
-    font-size: 18px;
-    cursor: pointer;
-    opacity: 0;
-    transition: opacity 0.2s ease;
+  position: absolute;
+  right: 30px;
+  background: none;
+  transform: translateY(2px);
+  border: none;
+  color: #9FAABE;
+  font-size: 18px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease;
 }
 
 .input-zone:hover .clear-button {
-    opacity: 1;
+  opacity: 1;
 }
 
-.input-zone .clear-button.always-visible {
-    opacity: 1;
+.calendar-overlay {
+  position: absolute;
+  z-index: 9999;
+  background-color: #2F3A5A;
+  border: 1px solid #9FAABE;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  top: 40px;
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list {
+  max-height: 150px;
 }
